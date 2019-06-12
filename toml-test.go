@@ -15,8 +15,9 @@ import (
 type A struct {
 	Str         string
 	B           B
-	B_nil_point *B // naoina unsupport nil point
-	in          *B // pelletier over ride
+	B_nil_point *B     // naoina unsupport nil point
+	in          *B     // pelletier over write
+	in_str      string // pelletier over write
 }
 
 type B struct {
@@ -24,10 +25,10 @@ type B struct {
 }
 
 func main() {
-	shafreeck()
-	fmt.Println("toml3")
 	pelletier()
 	fmt.Println("toml0")
+	shafreeck()
+	fmt.Println("toml3")
 	naoina()
 	fmt.Println("toml1")
 	burntsushi()
@@ -37,12 +38,16 @@ func main() {
 func make_struct() *A {
 	a := &A{}
 	a.in = &B{}
+	a.in_str = "adasds"
 	return a
 }
 
 func check_struct(a *A) {
 	if a.in == nil {
 		log.Fatalln("in is nil")
+	}
+	if a.in_str != "adasds" {
+		log.Fatalln("in_str is changed")
 	}
 }
 
@@ -53,6 +58,9 @@ func pelletier() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+
+	fmt.Println(string(b))
+
 	err = toml0.Unmarshal(b, a)
 	if err != nil {
 		log.Fatalln(err)
