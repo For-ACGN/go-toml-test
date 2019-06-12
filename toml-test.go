@@ -3,11 +3,13 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"log"
 
 	toml2 "github.com/BurntSushi/toml"
 	toml1 "github.com/naoina/toml"
 	toml0 "github.com/pelletier/go-toml"
+	toml3 "github.com/shafreeck/toml"
 )
 
 type A struct {
@@ -18,13 +20,18 @@ type A struct {
 }
 
 type B struct {
-	Func func() `toml:"-"` // BurntSushi will not skip
+	Func func() `toml:"-"` // BurntSushi & shafreeck will not skip
 }
 
 func main() {
+	shafreeck()
+	fmt.Println("toml3")
 	pelletier()
+	fmt.Println("toml0")
 	naoina()
-	//BurntSushi()
+	fmt.Println("toml1")
+	burntsushi()
+	fmt.Println("toml2")
 }
 
 func make_struct() *A {
@@ -68,7 +75,7 @@ func naoina() {
 }
 
 // unsupport nest struct tag
-func BurntSushi() {
+func burntsushi() {
 	a := make_struct()
 	buffer := bytes.NewBuffer(nil)
 	err := toml2.NewEncoder(buffer).Encode(a)
@@ -76,6 +83,19 @@ func BurntSushi() {
 		log.Fatalln(err)
 	}
 	err = toml2.Unmarshal(buffer.Bytes(), a)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	check_struct(a)
+}
+
+func shafreeck() {
+	a := make_struct()
+	b, err := toml3.Marshal(a)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	err = toml3.Unmarshal(b, a)
 	if err != nil {
 		log.Fatalln(err)
 	}
